@@ -22,7 +22,7 @@ jobs:
           cd todo  # Navigate to the directory containing manage.py
           # Optionally set STATIC_ROOT environment variable
           export STATIC_ROOT=/path/to/your/staticfiles  # Adjust the path according to your project structure
-          python3 manage.py collectstatic --noinput  # Collect static files
+          python3 manage.py runserver  # Collect static files
           python3 manage.py migrate  # Apply migrations
 
       - name: Deploy to EC2
@@ -45,7 +45,7 @@ jobs:
             python3 manage.py migrate
 
             # Collect static files (adjust as needed)
-            python3 manage.py collectstatic --noinput
+            python3 manage.py runserver
 
             # Restart your application process (adjust for your service manager)
             sudo systemctl restart gunicorn  # Example using gunicorn
