@@ -1,0 +1,37 @@
+name: Deploy to EC2
+    
+on:
+  push:
+    branches: [ main ]  # Trigger on pushes to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3  # Checkout code from repository
+      - name: Install dependencies  # Install dependencies for your code (e.g., npm install)
+      - run: |  # Build your application (replace with your build command)
+          cd your-api-code-directory
+          npm run build
+
+      - name: Upload build artifacts (optional)  # Upload build artifacts to S3 (optional)
+        uses: aws-actions/aws-upload-artifact@v1
+        with:
+          name: deploy-artifacts
+          path: dist  # Replace with your build output directory
+
+      - name: Deploy to EC2  # Deploy code to EC2 instance
+        uses: appleboy/ssh-action@v2
+        with:
+          host: ${{ secrets.EC2_HOST_IP }}  # Replace with EC2 instance IP
+          username: ubuntu  # Adjust if using a different username
+          key: ${{ secrets.PEM_KEY }}  # Replace with PEM key content (use base64 encoding)
+          script: |  # Deployment script to run on EC2 instance
+            cd /var/www/html  # Replace with your deployment directory
+            # Replace these commands with your deployment logic (e.g., copy files, restart services)
+            rm -rf *  # Remove existing files (caution, use with care!)
+            cp -r /tmp/deploy-artifacts/* .  # Copy uploaded artifacts (if using S3 upload)
+
+secrets:
+  EC2_HOST_IP: ${{ secrets.EC2_HOST_IP }}  # Store EC2 instance IP as a secret
+  PEM_KEY: ${{ secrets.PEM_KEY }}  # Store PEM key content as a base64 encoded secret
