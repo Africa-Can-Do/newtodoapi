@@ -15,8 +15,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y python3-pip
-          cd github.com/Africa-Can-Do/newtodoapi/blob/asiwome/todo/requirements.txt
-          pip3 install -r requirements.txt
+          pip3 install -r todo/requirements.txt  # Adjust the path if requirements.txt is located elsewhere
 
       - name: Build the API (adjust for your build command)
         run: |
