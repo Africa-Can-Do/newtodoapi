@@ -1,37 +1,52 @@
-name: Deploy to EC2
-    
+name: Deploy newtodoapi API to EC2
+
 on:
   push:
-    branches: [ main ]  # Trigger on pushes to the main branch
+    branches: [ asiwome ]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3  # Checkout code from repository
-      - name: Install dependencies  # Install dependencies for your code (e.g., npm install)
-      - run: |  # Build your application (replace with your build command)
-          cd your-api-code-directory
-          npm run build
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Upload build artifacts (optional)  # Upload build artifacts to S3 (optional)
-        uses: aws-actions/aws-upload-artifact@v1
-        with:
-          name: deploy-artifacts
-          path: dist  # Replace with your build output directory
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip
+          pip3 install -r requirements.txt
 
-      - name: Deploy to EC2  # Deploy code to EC2 instance
-        uses: appleboy/ssh-action@v2
+      - name: Build the API (adjust for your build command)
+        run: |
+          python3 manage.py collectstatic --noinput
+          python3 manage.py migrate
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v0.1.6
         with:
-          host: ${{ secrets.EC2_HOST_IP }}  # Replace with EC2 instance IP
+          host: ${{ secrets.EC2_HOST_IP }}
           username: ubuntu  # Adjust if using a different username
-          key: ${{ secrets.PEM_KEY }}  # Replace with PEM key content (use base64 encoding)
-          script: |  # Deployment script to run on EC2 instance
-            cd /var/www/html  # Replace with your deployment directory
-            # Replace these commands with your deployment logic (e.g., copy files, restart services)
-            rm -rf *  # Remove existing files (caution, use with care!)
-            cp -r /tmp/deploy-artifacts/* .  # Copy uploaded artifacts (if using S3 upload)
+          key: ${{ secrets.PEM_KEY }}  # Encoded PEM key content
+          script: |
+            sudo apt-get update
+            sudo apt-get install -y python3-pip  # Ensure python3 is available
 
-secrets:
-  EC2_HOST_IP: ${{ secrets.EC2_HOST_IP }}  # Store EC2 instance IP as a secret
-  PEM_KEY: ${{ secrets.PEM_KEY }}  # Store PEM key content as a base64 encoded secret
+            cd /var/newtodoapi  # Replace with your deployment directory
+            git pull origin main
+
+            # Install dependencies on EC2 instance
+            pip3 install -r requirements.txt
+
+            # Apply migrations (adjust as needed)
+            python3 manage.py migrate
+
+            # Collect static files (adjust as needed)
+            python3 manage.py collectstatic --noinput
+
+            # Restart your application process (adjust for your service manager)
+            sudo systemctl restart gunicorn  # Example using gunicorn
+
+      - name: (Optional) Clean up temporary files (use with caution!)
+        run: |
+          rm -rf /tmp/*
