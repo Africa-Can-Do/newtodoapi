@@ -42,13 +42,13 @@ jobs:
             pip3 install -r requirements.txt
 
             # Apply migrations (adjust as needed)
-            python3 manage.py migrate
+            # python3 manage.py migrate
 
             # Collect static files (adjust as needed)
-            python3 manage.py collectstatic --noinput
+            # python3 manage.py collectstatic --noinput
 
             # Restart your application process (adjust for your service manager)
-            sudo systemctl restart gunicorn  # Example using gunicorn
+            # sudo systemctl restart gunicorn  # Example using gunicorn
 
       - name: (Optional) Clean up temporary files (use with caution!)
         run: |
