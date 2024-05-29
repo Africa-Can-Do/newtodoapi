@@ -22,11 +22,11 @@ jobs:
           cd todo  # Navigate to the directory containing manage.py
           # Optionally set STATIC_ROOT environment variable
           export STATIC_ROOT=/path/to/your/staticfiles  # Adjust the path according to your project structure
-          python3 manage.py runserver  # Collect static files
+          python3 manage.py collectstatic --noinput  # Collect static files
           python3 manage.py migrate  # Apply migrations
 
       - name: Deploy to EC2
-        uses: appleboy/ssh-action@v0.1.6
+        uses: appleboy/ssh-action@v0.1.6  # Consider updating the action version if necessary
         with:
           host: ${{ secrets.EC2_HOST_IP }}
           username: ubuntu  # Adjust if using a different username
@@ -45,7 +45,7 @@ jobs:
             python3 manage.py migrate
 
             # Collect static files (adjust as needed)
-            python3 manage.py runserver
+            python3 manage.py collectstatic --noinput
 
             # Restart your application process (adjust for your service manager)
             sudo systemctl restart gunicorn  # Example using gunicorn
