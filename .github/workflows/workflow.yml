@@ -11,11 +11,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install dependencies
+      - name: Install dependencies (optional)  # Adjust as needed
         run: |
           sudo apt-get update
+          # Uncomment and adjust if needed
           # sudo apt-get install -y python3-pip
-          # pip3 install -r todo/requirements.txt  # Adjust the path if requirements.txt is located elsewhere
 
       - name: Build the API (adjust for your build command)
         run: |
@@ -25,6 +25,10 @@ jobs:
           # python3 manage.py collectstatic --noinput  # Collect static files
           # python3 manage.py migrate  # Apply migrations
 
+      - name: Create deployment directory (if needed)
+        run: |
+          ssh ubuntu@<your_ec2_host_ip> -i <path_to_pem_key> 'sudo mkdir -p /var/newtodoapi'
+
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v0.1.6  # Consider updating the action version if necessary
         with:
@@ -33,7 +37,8 @@ jobs:
           key: ${{ secrets.PEM_KEY }}  # Encoded PEM key content
           script: |
             sudo apt-get update
-            #sudo apt-get install -y python3-pip  # Ensure python3 is available
+            # Uncomment and adjust if needed
+            # sudo apt-get install -y python3-pip  # Ensure python3 is available
 
             cd /var/newtodoapi  # Replace with your deployment directory
             git pull origin asiwome
