@@ -19,6 +19,7 @@ jobs:
 
       - name: Build the API (adjust for your build command)
         run: |
+          cd todo  # Navigate to the directory containing manage.py
           python3 manage.py collectstatic --noinput
           python3 manage.py migrate
 
