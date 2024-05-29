@@ -15,7 +15,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y python3-pip
-          cd ../../todo
+          cd newtodoapi\todo
           pip3 install -r requirements.txt
 
       - name: Build the API (adjust for your build command)
