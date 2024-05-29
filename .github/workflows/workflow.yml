@@ -20,6 +20,8 @@ jobs:
       - name: Build the API (adjust for your build command)
         run: |
           cd todo  # Navigate to the directory containing manage.py
+          # Optionally set STATIC_ROOT environment variable
+          export STATIC_ROOT=/path/to/your/staticfiles  # Adjust the path according to your project structure
           python3 manage.py collectstatic --noinput  # Collect static files
           python3 manage.py migrate  # Apply migrations
 
