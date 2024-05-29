@@ -11,3 +11,5 @@ django-celery
 celery[redis]
 redis
 django-rest-swagger
+drf_yasg==1.21.4
+
